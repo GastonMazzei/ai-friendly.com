@@ -1,0 +1,20 @@
+# Flask
+Flask==1.0.2
+uWSGI==2.0.18
+
+# Jenkins
+jenkinsapi==0.3.11
+
+# Para AI
+tensorboard==1.14.0
+tensorflow==1.14.0
+tensorflow-estimator==1.14.0
+scikit-learn==0.21.3
+openpyxl==2.6.2
+xlrd==1.2.0
+numpy==1.17.0
+pandas==0.25.0
+Keras==2.2.4
+Keras-Applications==1.0.8
+Keras-Preprocessing==1.1.0
+matplotlib==3.0.2

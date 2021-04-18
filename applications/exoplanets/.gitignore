@@ -1,0 +1,4 @@
+*.pyc
+__pycache__/
+database/network-regression-predictions.csv
+gallery/*

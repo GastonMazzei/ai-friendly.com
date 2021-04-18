@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Let's make Artifical Intelligence more human-friendly</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+      <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+      <script language="javascript">
+         function toggle(elementId) {
+                var ele = document.getElementById(elementId);
+                if(ele.style.display == "block") {ele.style.display = "none";}
+                else {ele.style.display = "block";}
+         }
+      </script>
+   </head>
+   <body>
+      <!-- HEADER -->  
+      {% if processing %}
+      <meta http-equiv="refresh" content="5">
+      <div class="notification is-primary">
+         <p>We are processing your new InCard...</p>
+      </div>
+      {% endif %}
+      {% if incardError %}
+      <meta http-equiv="refresh" content="10">
+      <div class="notification is-danger">
+         <div class="message-body">
+            <p>{{ message_body }}</p>
+         </div>
+      </div>
+      <script type="text/javascript">   
+         function Redirect() {  window.location="results?id={{ _id_ }}"; }  
+         setTimeout('Redirect()', 5000);   
+      </script>
+      {% endif %}
+      <section class="hero is-link is-fullheight-with-navbar" style="background-image: url(/static/bg01.jpg)">
+         <div class="hero-body">
+            <div class="container">
+               <h1 class="title is-size-1">
+                  Artificial Intelligence made Friendly
+               </h1>
+               <h2 class="subtitle">
+                  A toy app to play with a simple Neural Network
+               </h2>
+               <br>
+               <div class="tile is-ancestor">
+				  <!-- Welcome message, upload new InCard, MyCards -->
+                  <div class="tile is-vertical">
+					 <!-- Welcome message, upload new InCard -->
+                     <div class="tile is-parent">
+                        <article class="tile is-child">
+                           <p class="title">Welcome again!</p>
+                           <p class="subtitle">This is your job's result page.</p>
+                           <p>Here you will find more details on the network that you've just trained.</p>
+                           <br>
+                           <p>Your uploaded LearnCard used for the AI training can be found here: <a href="getcards?id={{ _id_ }}&item=0&type=learncard">{{learncard}}</a> </p>
+                           <p>You can also upload a new InCard and get more predictions. Have fun!</p>
+                           <form method=post action='/newincard?id={{ _id_ }}' enctype='multipart/form-data'>
+							  <input type=file name=incard>
+                              <div class="control">
+                                 <button class="button is-link" align="right">
+                                 <span>Let's go!</span>
+                                 <span class="icon"><i class="fas fa-cogs"></i></span>
+                                 </button>
+                              </div>
+                           </form>
+                        </article>
+                     </div>
+                     <div class="tile">
+						<!-- My InCards and OutCards -->
+                        <div class="tile is-parent">
+                           <article class="tile is-child notification is-primary">
+                              <p class="title">My InCards</p>
+                              <p class="subtitle">Your InCards are listed here</p>
+                              {% for item in incards %}
+                              <a href="getcards?id={{ _id_ }}&item={{ loop.index0 }}&type=incard">{{item}}</a><br>
+                              {% endfor %}
+                           </article>
+                        </div>
+                        <div class="tile is-parent">
+                           <article class="tile is-child notification is-primary">
+                              <p class="title">My OutCards</p>
+                              <p class="subtitle">And these are your results</p>
+                              {% for item in outcards %}
+                              <a href="getcards?id={{ _id_ }}&item={{ loop.index0 }}&type=outcard">{{item}}</a><br>
+                              {% endfor %}
+                           </article>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- Model performance -->
+                  <div class="tile is-parent">
+                     <article class="tile is-child notification is-danger">
+                        <p class="title">Model performance</p>
+                        <p class="subtitle">This plot resumes the prediction power of the trained network.</p>
+                        <p>The network is better trained when it has high values of 'true positive' prediction at low values of 'false positive' prediction.</p>
+                        <br>
+                        <!--<figure class="image is-4by3">-->
+                        <figure class="image">
+                           <img src="uploads/{{ _id_ }}/figPerf.png">
+                        </figure>
+                     </article>
+                  </div>
+               </div>
+               <!-- New tile -->
+               
+               <div class="tile is-ancestor">
+                  <div class="tile is-parent">
+                     <article class="tile is-child notification is-link">
+                        <p class="title">Accuracy</p>
+                        <p class="subtitle">In this plot you can see the accuracy of the trained model after each learning step (epoch).</p>
+                        <p>Given a subset of 'N' examples taken from the LearnCard,
+                        the accuracy is the ratio of the number of correct answers predicted by the neural network to N.
+                        From the net number of examples in the LearnCard, the
+                        Train curve takes into account those used for training, while the
+                        Test curve is a small subset reserved for testing only.</p>
+                        <br>
+                        <figure class="image">
+                           <img src="uploads/{{ _id_ }}/figAcc.png">
+                        </figure>
+                     </article>
+                  </div>
+                  <!-- tile vertical-->
+                  <div class="tile is-parent">
+                     <article class="tile is-child notification is-link">
+                        <p class="title">Loss</p>
+                        <p class="subtitle">This plot shows the computation of the loss function (a quantity that is used to optimize the network)
+                        as the learn step (epoch) increases.</p>
+                        <p>The network is better trained when it has lower 'loss' values.
+                        Beware that a big separation between the 'Train' and 'Test' curves could indicate a case of
+                        <a href="https://en.wikipedia.org/wiki/Overfitting" target="_blank">model overfitting</a>.
+                        </p>
+                        <br><br>
+                        <figure class="image">
+                           <img src="uploads/{{ _id_ }}/figLoss.png">
+                        </figure>
+                     </article>
+                  </div>
+               </div>
+
+
+
+
+
+<!-- -->
+<div>
+                  <div class="tile is-parent">
+                     <article class="tile is-child notification is-primary is-6">
+                        <p class="title">Feature Relevance</p>
+                        <p class="subtitle">The current plot shows the column relevance, a magnitude that indicates the relative importance between the dataset columns.</p>
+                        <p>Feature relevance can't be naturally computed from dense neural networks; the mechanism here used to compute it is called <a href="https://en.wikipedia.org/wiki/Gradient_boosting#:~:text=Gradient%20boosting%20is%20a%20machine,prediction%20models%2C%20typically%20decision%20trees." target="_blank">Gradient Boosting</a>.
+                        </p>
+                        <br><br>
+                        <figure class="image">
+                           <img src="uploads/{{ _id_ }}/figFeature.png">
+                        </figure>
+                     </article>
+                  </div>
+</div>
+<!-- -->
+
+
+
+
+
+               
+            </div> <!-- /container -->
+         </div>
+      </section>
+     
+    <footer class="footer">
+      <div class="content has-text-centered">
+        <p>Proof of concept powered by:
+          <a href="http://easytech.com.ar" target="_blank">EasytechGreen</a> and 
+          <a href="http://icas.unsam.edu.ar" target="_blank">ICAS Universidad de San Martin</a>
+        </p>
+      </div>
+    </footer>
+   </body>
+</html>

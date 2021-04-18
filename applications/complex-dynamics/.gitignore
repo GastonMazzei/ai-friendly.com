@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+database/equations_and_solutions.pkl
+

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+mkdir gallery
+echo "1) Simulating an RLC-series circuit"
+python3 scripts/generator.py 1 >> logs.txt
+rm logs.txt
+echo "Done! (saved in the gallery)"
+echo "2) Simulating RLC-series resonance curves"
+python3 scripts/generator.py 2 >> logs.txt
+rm logs.txt
+echo "Done! (saved in the gallery)"
+echo "3) Simulating 5k RLC-series circuits with a Diode in parallel with the inductance"
+python3 scripts/generator.py 3 >> logs.txt
+rm logs.txt
+echo "Done! (saved in the database)"
+echo "4) Plotting the range of the circuit elements' values used in the simulation"
+python3 scripts/generator.py 4 >> logs.txt
+rm logs.txt
+echo "Done! (saved in the gallery)"
+echo "5) Training a neural network in the classification task over the database"
+python3 ../../brains/procesador.py >> logs.txt
+rm logs.txt
+echo "Done! (saved in the gallery)"

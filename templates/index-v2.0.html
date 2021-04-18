@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Let's make Artifical Intelligence more human-friendly</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+      <!--    <link rel="stylesheet" href="https://www.jsdelivr.com/package/npm/bulma-extensions?path=bulma-checkradio">-->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-extensions@4.0.0/dist/css/bulma-extensions.min.css  ">
+      <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bulma-extensions@4.0.0/dist/js/bulma-extensions.min.js  "></script>
+      <script language="javascript">
+         function toggle(elementId) {
+            var ele = document.getElementById(elementId);
+            if(ele.style.display == "block") {ele.style.display = "none";}
+            else {ele.style.display = "block";}
+         }
+         function toggleSpecial(elementId) {
+            toggle(elementId);
+            var advanced = document.getElementById("toggleText4");
+            advanced.style.display = "none"
+         }
+         
+          
+      </script>
+      <script>
+         var globalState = {
+            'layer1-advanced':8,
+            'layer2-advanced':8,
+            'layer3-advanced':8,
+            'layer1':8,'layer2':8};         
+         function up(elementId) {
+            var value = globalState[elementId]
+            if (value < 16) {
+               globalState[elementId] += 1;
+               document.getElementById(elementId).innerHTML = globalState[elementId];
+               document.getElementById(elementId + '_submit').value = globalState[elementId]
+            }
+         }	
+         function down(elementId) {
+            var value = globalState[elementId]
+            if (value > 1) {
+               globalState[elementId] = value - 1;
+               document.getElementById(elementId).innerHTML = value - 1;
+               document.getElementById(elementId + '_submit').value = globalState[elementId]
+            }
+         }	         
+      </script>	
+      <style>
+         .doubled {
+            display: flex;
+            justify-content: space-between;
+         }
+         .columntitle {
+         background-color: #3273DC;
+         white-space: nowrap;
+         padding-right: 0.5rem;
+         padding-left: 0.5rem;
+         margin-bottom: 0.25rem;
+         width: auto;
+         text-align: left;
+         border-radius: 0.2rem;
+         /*border: 0.2rem solid green;*/
+         }
+         .slidervalue {
+         background-color: rgb(255, 255, 255);
+         color: #3273DC;
+         white-space: nowrap;
+         padding-right: 0.5rem;
+         padding-left: 0.5rem;
+         margin-bottom: 0.25rem;
+         width: auto;
+         text-align: center;
+         border-radius: 0.2rem;
+         /*border: 0.2rem solid green;*/
+         }
+         .nn-layer {
+         width:3rem; 
+         height:6.5rem; 
+         background: hsl(217, 71%, 53%);
+         border-radius: 0.9rem;
+         text-align:center;
+         padding: 2.2rem 0;
+         /*border: 0.2rem solid green;*/
+         }
+         .nn-layer-adv {
+         width:3rem; 
+         height:8.5rem; 
+         background: hsl(217, 71%, 53%);
+         border-radius: 0.9rem;
+         text-align:center;
+         padding: 3rem 0;
+         /*border: 0.2rem solid green;*/
+         }
+         img.activation {
+         width: 5rem;
+         height: 5rem;
+         } 
+         img.activation-2 {
+         width: 5rem;
+         height: 5rem;
+         margin-bottom: 0.25rem;
+         } 
+         .specialcontainer {
+         display: flex;
+         flex-direction: column;
+         justify-content: center; 
+         align-items: center; 
+         }
+         li ul {display:none;}
+         li input:checked + ul {display:block;}
+      </style>
+      <style>
+         .slidecontainer {
+         width: 100%; /* Width of the outside container */
+         margin-bottom: 1rem;
+         }
+         /* SLIDER */
+         .slider-own {
+         -webkit-appearance: none;  /* Override default CSS styles */
+         appearance: none;
+         width: 100%; /* Full-width */
+         height: 1.5rem; /* Specified height */
+         background: #d3d3d3; /* Grey background */
+         outline: none; /* Remove outline */
+         opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+         -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+         transition: opacity .2s;
+         }
+         /* Mouse-over effects */
+         .slider-own:hover {
+         opacity: 1; /* Fully shown on mouse-over */
+         }
+         /* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+         .slider-own::-webkit-slider-thumb {
+         -webkit-appearance: none; /* Override default look */
+         appearance: none;
+         width: 1rem; /* Set a specific slider handle width */
+         height: 1.7rem; /* Slider handle height */
+         background: #00D1B2; /* Green background */
+         cursor: pointer; /* Cursor on hover */
+         }
+         .slider-own::-moz-range-thumb {
+         width: 1rem; /* Set a specific slider handle width */
+         height: 1.7rem; /* Slider handle height */
+         background: #00D1B2; /* Green background */
+         cursor: pointer; /* Cursor on hover */
+         }
+      </style>
+   </head>
+   <body>
+      <form method=post action='/upload' enctype='multipart/form-data'>
+         <!-- onsubmit="prepareDiv()">-->
+         {% if show_success %}
+         <article class="message is-success">
+            <div class="message-header">
+               <p>{{ message_title }}</p>
+            </div>
+            <div class="message-body" style="margin-bottom: 0">
+               <p>{{ message_body }}</p>
+            </div>
+         </article>
+         {% endif %}
+         {% if show_fail %}
+         <article class="message is-danger">
+            <div class="message-header">
+               <p>{{ message_title }}</p>
+            </div>
+            <div class="message-body">
+               <p>{{ message_body }}</p>
+            </div>
+         </article>
+         {% endif %}
+      <form method=post action='/upload' enctype='multipart/form-data'>
+         <section class="hero is-link is-fullheight-with-navbar" style="background-image: url(./static/bg01.jpg)">
+            <div class="hero-body">
+               <div class="container">
+                  <h1 class="title is-size-1">
+                     Artificial Intelligence made Friendly
+                  </h1>
+                  <h2 class="subtitle">
+                     A toy app to play with a simple Neural Network
+                  </h2>
+                  <br>
+                  <p class="title">
+                     Upload an excel file to teach "something" to the Neural Network, and then upload another excel file to take profit of what the Machine has learned!
+                  </p>
+                  <p>
+                     <a href="#step-1" class="button is-medium">
+                     <span>Let's try!</span>
+                     <span class="icon"><i class="fas fa-chevron-circle-right"></i></span>
+                     </a>
+                     <a class="button is-medium" href="javascript:toggle('toggleText3');">
+                     <span>Customize Network</span>
+                     <span class="icon"><i class="fas fa-chevron-circle-right"></i></span>
+                     </a>
+                  </p>
+                  <br>
+                  <p class="subtitle">
+                     <a id="displayText" href="javascript:toggle('toggleText');">[Basic Help]</a>
+                     <a id="displayText2" href="javascript:toggle('toggleText2');">[Deep Help]</a>
+                  </p>
+
+
+
+                  <div id="toggleText" class="hero" style="display: none" href="javascript:toggle();">
+                     <p>	
+                     <ul style="list-style-type:disc;">
+                        <li> Best works with LearnCard: NRows ≳ 500 and 5 ≲ NCols ≲ 30</li>
+                        <li> LearnCard should have less than 2000 rows and 30 columns, InCard can have at most 10k rows </li>
+                        <li> First row is intended for titles and is always removed
+                        <li> Example 'House prices': Each row corresponds to a selling house features: number of bedrooms, bathrooms, their sizes, garage, etc.  The last column in LearnCard is set to 1 if the house was overpriced (not sold in the first 3 months), and to 0 otherwise.  Therefore, the Real State agent can use this learning to make his/her business work better for upcoming houses.  See example <a href="/static/LearnCard_House.xlsx">LearnCard_House.xlsx</a> and <a href="/static/InCard_House.xlsx">InCard_Houses.xlsx</a>. </li>
+                        <li> Example 'Increasing': Each row consists of random numbers which increase randomly by steps of 1 to 10.  However, some times there is a fail and the number decreases instead of increasing.  We call it category 1 if there is no fail, and category 0 if there is a fail.  See example <a href="/static/LearnCard_Increasing.xlsx">LearnCard_Increasing.xlsx</a> and <a href="/static/InCard_Increasing.xlsx">InCard_Increasing.xlsx</a>.</li>
+                        <li> Example 'Topological Islands': Each row consists of 1 and 0's; if all the 1's are always within only one compact island -with no 0's in between-, we call it category 1, otherwise, category 0.  See example <a href="/static/LearnCard_Islands.xlsx">LearnCard_Islands.xlsx</a> and <a href="/static/InCard_Islands.xlsx">InCard_Islands.xlsx</a>. </li>
+                        <li> The default Neural Network consists of 2 layers with 32 Neurons each, optimized through SGD. </li>
+                     </ul>
+                     </p>
+                  </div>
+                  <div id="toggleText2" class="hero" style="display: none" href="javascript:toggle();">
+                     <p>	
+                     <ul style="list-style-type:disc;">
+                        <li> more info <a href="https://medium.com/@andrewng">HERE</a> </li>
+                     </ul>
+                     </p>
+                  </div>
+
+                  <!-- -----------------------------C-U-S-T-O-M-I-Z-E--N-E-T-W-O-R-K--------------------->    
+                  <br>
+                  <div id="toggleText3"   class="hero is-fluid is-bold is-dark " style="display: none" href="javascript:toggle();">
+                     <div class="columns is-vcentered is-centered">
+                        <div>
+                           <hr>
+                           <a class="button is-link is-small" href="javascript:toggle('toggleText4');javascript:toggle('toggleText3');">More Options!</a>
+                           <hr>
+                        </div>
+                        <div class="column has-text-centered is-one-fifth">
+                           <div class='specialcontainer'>
+                              <div class='columntitle'>
+                                 Neurons
+                              </div>
+                              <div class='columns is-vcentered'>
+                                 <div class='column'>
+                                    <div class='specialcontainer'>
+                                       <div >
+                                          <div id="layer1" class='nn-layer' >
+                                             8
+                                          </div>
+                                          <div>
+                                             <input type="hidden" id="layer1_submit" name="layer1_basic"/>
+                                          </div>
+                                       </div>
+                                       Layer 1
+                                       <div>
+                                          <a class="button is-small is-link" onclick="down('layer1');">-</a>
+                                          <a class="button is-small is-link" onclick="up('layer1');">+</a>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class='column'>
+                                    <div class='specialcontainer'>
+                                       <div>
+                                          <div id="layer2" class='nn-layer'>
+                                             8
+                                          </div>
+                                          <div>
+                                             <input type="hidden" id="layer2_submit" name="layer2_basic"/>
+                                          </div>
+                                       </div>
+                                       Layer 2
+                                       <div>
+                                          <a class="button is-small is-link" onclick="down('layer2');">-</a>
+                                          <a class="button is-small is-link" onclick="up('layer2');">+</a>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="column is-one-fifth">
+                           <div class="specialcontainer">
+                              <div class='columntitle'>Activation</div>
+                              <div>
+                                 <div class="doubled">
+                                    <img src="./static/ReLu.png" alt="rectified linear activation function chart" class='activation'> 
+                                    <img src="./static/Tanh.png" alt="hyperbolic tangent activation function chart" class='activation'>
+                                 </div>
+                                 <div class="field">
+                                    <input class="is-checkradio is-small is-circle is-warning" id="activ-relu" type="radio" name="activation_basic" value="relu" checked="checked">
+                                    <label for="activ-relu">&nbspReLu&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+                                    <input class="is-checkradio is-small is-circle is-warning" id="activ-tanh" type="radio" name="activation_basic" value="tanh">
+                                    <label for="activ-tanh">&nbspTanh&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</label>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="column is-two-fifths has-text-centered is-vcentered">
+                           <div class='specialcontainer'>
+                              <p>
+                                 <span class="columntitle">Epochs</span>
+                                 <span id="demo2" class='slidervalue'>100</span>
+                              </p>
+                              <div class="slidecontainer">
+                                 <input type="range" min="50" max="200" name="epochs_basic" value="100" class="slider is-fullwidth is-medium is-warning" id="myRange2">
+                              </div>
+                           </div>
+                        </div>
+                        </ul>
+                        </ul>
+                     </div>
+                  </div>
+                  <br><br>
+                  <!------------------C-U-S-T-O-M-I-Z-E--A-D-V-A-N-C-E-D-------------------------------------->
+                  <div id="toggleText4"   class="hero is-fluid is-bold is-dark " style="display: none" href="javascript:toggle();">
+                     <div class="columns is-vcentered is-centered">
+                        <div>
+                           <hr>
+                           <a class="button is-link is-small" href="javascript:toggle('toggleText4');javascript:toggle('toggleText3');">Less Options!</a>
+                           <hr>
+                        </div>
+                        <div class="column has-text-centered is-one-fifth">
+                           <div class='specialcontainer'>
+                              <div class='columntitle'>
+                                 Optimizer
+                              </div>
+                              <div class="field">
+                                 <input type="radio" id="optimizer-sgd" class="is-checkradio is-small is-warning" value="sgd" name="optimizer_advanced" checked="checked" />
+                                 <label for="optimizer-sgd">SGD</label>
+                                 <input type="radio" id="optimizer-adam" class="is-checkradio is-small is-warning" value="adam" name="optimizer_advanced" />
+                                 <label for="optimizer-adam">Adam</label> 
+                                 <br>
+                              </div>
+
+                              <div class='columntitle'>
+                                 Extra Features
+                                 </div class="level-left">
+                                 <div>
+                                    <div class="field">
+                                       <input id="noise" type="checkbox" name="noise_advanced" value="True" class="switch is-warning">
+                                       <label for="noise">Noisy</label>
+                                    </div>
+                                    <div class="field">
+                                       <input id="normalize" type="checkbox" name="norm_advanced" value="True" class="switch is-warning">
+                                       <label for="normalize">Norm</label>
+                                    </div>
+                                    <div class="field">
+                                       <input id="sine" type="checkbox" name="sine_advanced" value="True" class="switch is-warning">
+                                       <label for="sine">Sin(x)</label>
+                                    </div>
+                                    <div class="field">
+                                       <input id="squared" type="checkbox" name="quad_advanced" value="True" class="switch is-warning">
+                                       <label for="squared">Quad</label>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="column has-text-centered is-one-fifth">
+                              <div class='specialcontainer'>
+                                 <div class='columntitle'>
+                                    Neurons
+                                 </div>
+                                 <div class='columns is-vcentered'>
+                                    <div class='column'>
+                                       <div class='specialcontainer'>
+                                          <div >
+                                             <div id="layer1-advanced" class='nn-layer-adv' >
+                                                8
+                                             </div>
+                                             <div>
+                                                <input type="hidden" id="layer1-advanced_submit" name="layer1-advanced"/>
+                                             </div>
+                                          </div>
+                                          Layer 1
+                                          <div>
+                                             <a class="button is-small is-link" onclick="down('layer1-advanced');">-</a>
+                                             <a class="button is-small is-link" onclick="up('layer1-advanced');">+</a>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div class='column'>
+                                       <div class='specialcontainer'>
+                                          <div >
+                                             <div id="layer2-advanced" class='nn-layer-adv' >
+                                                8
+                                             </div>
+                                             <div>
+                                                <input type="hidden" id="layer2-advanced_submit" name="layer2-advanced"/>
+                                             </div>
+                                          </div>
+                                          Layer 2
+                                          <div>
+                                             <a class="button is-small is-link" onclick="down('layer2-advanced');">-</a>
+                                             <a class="button is-small is-link" onclick="up('layer2-advanced');">+</a>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div class='column'>
+                                       <div class='specialcontainer'>
+                                          <div >
+                                             <div id="layer3-advanced" class='nn-layer-adv' >
+                                                8
+                                             </div>
+                                             <div>
+                                                <input type="hidden" id="layer3-advanced_submit" name="layer3-advanced"/>
+                                             </div>
+                                          </div>
+                                          Layer 3
+                                          <div>
+                                             <a class="button is-small is-link" onclick="down('layer3-advanced');">-</a>
+                                             <a class="button is-small is-link" onclick="up('layer3-advanced');">+</a>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="column is-one-fifth">
+                              <div class="specialcontainer">
+                                 <div class='columntitle'>Activation</div>
+                                 <div class="field">
+                                    <img src="./static/ReLu.png" alt="rectified linear activation function chart" class='activation-2'> 
+                                    <input type="radio" id="activ-adv-relu" class="is-checkradio is-small is-circle is-warning" value="relu" name="activation_advanced" checked="checked" />
+                                    <label for="activ-adv-relu">ReLu</label> 
+                                 </div>
+                                 <div  class="field">
+                                    <img src="./static/Tanh.png" alt="hyperbolic tangent activation function chart" class='activation-2'> 
+                                    <input type="radio" id="activ-adv-tanh" class="is-checkradio is-small is-warning" value="tanh" name="activation_advanced" />
+                                    <label for="activ-adv-tanh">Tanh</label>
+                                 </div>
+                                 <div class="field"> 
+                                    <img src="./static/SeLu.png" alt="Scaled Exponential Linear Unit activation function chart" class="activation-2"> 
+                                    <input type="radio" id="activ-adv-selu" class="is-checkradio is-small is-warning"  value="selu" name="activation_advanced" />
+                                    <label for="activ-adv-selu">SeLu</label>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="column is-one-fifth has-text-centered is-vcentered">
+                              <div class='specialcontainer'>
+                                 <div class="slidecontainer">
+                                    <p>
+                                       <span class='columntitle'>Epochs</span>
+                                       <span id="demo1" class='slidervalue'>100</span>
+                                    </p>
+                                    <input type="range" min="50" max="200" value="100" name="epochs_advanced" class="slider is-fullwidth is-medium is-warning" id="myRange1">
+                                 </div>
+                                 <div class="slidecontainer">
+                                    <p>
+                                       <span class='columntitle'>Batch Size</span>
+                                       <span id="demo3" class='slidervalue'>32</span>
+                                    </p>
+                                    <input type="range" min="8" max="256" value="32" name="batch_advanced" class="slider is-fullwidth is-medium is-warning" id="myRange3">
+                                 </div>
+                                 <div>
+                                    <p>
+                                       <span class='columntitle'>Learning Rate</span>
+                                       <span class="slidervalue"><span id="demo4">1</span>%</span>
+                                    </p>
+                                    <input type="range" min="1" max="5" value="1" name="learning_rate_advanced" class="slider is-fullwidth is-medium is-warning" id="myRange4">
+                                 </div>
+                              </div>
+                           </div>
+                           </ul>
+                           </ul>
+                        </div>
+                     </div>
+                     <script>
+                        function prepareDiv(elemIdOne, elemIdTwo) {
+                           document.getElementById(elemIdOne).value = document.getElementById(elemIdTwo).innerHTML;
+                        }
+                     </script>
+                     <script>
+                        function sliderFunc(x) {
+                           var slider = document.getElementById("myRange" + x);
+                           var output = document.getElementById("demo" + x);
+                           slider.oninput = function() {
+                              output.innerHTML = this.value;}
+                           }	 
+                        ["1","2","3","4"].forEach(item => sliderFunc(item));
+                     </script>
+                  </div>
+               </div>
+
+
+               </div>
+            </div>
+         </section>
+         <!-- Paso 1 -->
+         <section id="step-1" class="hero is-link is-dark is-fullheight-with-navbar">
+            <div class="hero-body">
+               <div class="container">
+                  <h1 class="title is-size-1">
+                     Step 1: LearnCard
+                  </h1>
+                  <h2 class="subtitle">
+                     Upload an excel file with the info the NN should learn.  Must consist in N+1 columns: in each row, the first N columns hold a number that describes a feature of the given event (one event by row); whereas the N+1 column is either a 1 or a 0 if the row belongs to a given category or not.
+                  </h2>
+                  <div class="field file has-name">
+                     <label class="file-label">
+                     <input class="file-input" type="file" name="learncard">
+                     <span class="file-cta">
+                     <span class="file-icon">
+                     <i class="fas fa-upload"></i>
+                     </span>
+                     <span class="file-label">
+                     Choose a file…
+                     </span>
+                     </span>
+                     <span class="file-name">LearnCard.xlsx</span>
+                     </label>
+                  </div>
+                  <a href="#step-2" class="button is-medium">
+                  <span>Next</span>
+                  <span class="icon"><i class="fas fa-chevron-circle-right"></i></span>
+                  </a>
+               </div>
+            </div>
+         </section>
+         <!-- Paso 2 -->
+         <section id="step-2" class="hero is-dark is-fullheight-with-navbar">
+            <div class="hero-body">
+               <div class="container">
+                  <h1 class="title is-size-1">
+                     Step 2: InCard
+                  </h1>
+                  <h2 class="subtitle">
+                     Upload an excel file with only N columns: each column is the same feature as in the previous LearnCard file.  The Machine Learning process will add a last column with a 1 or 0, accordingly to what has learned from the patterns taught in the LearndCard file.
+                  </h2>
+                  <div class="field file has-name">
+                     <label class="file-label">
+                     <input class="file-input" type="file" name="incard">
+                     <span class="file-cta">
+                     <span class="file-icon">
+                     <i class="fas fa-upload"></i>
+                     </span>
+                     <span class="file-label">
+                     Choose a file…
+                     </span>
+                     </span>
+                     <span class="file-name">InCard.xlsx</span>
+                     </label>
+                  </div>
+                  <p><a href="#step-1" class="button is-medium is-dark">Back</a>
+                     <a href="#step-3" class="button is-medium">
+                     <span>Next</span>
+                     <span class="icon"><i class="fas fa-chevron-circle-right"></i></span>
+                     </a>
+                  </p>
+               </div>
+            </div>
+         </section>
+         <!-- Paso 3 -->
+         <section id="step-3" class="hero is-warning is-fullheight-with-navbar is-bold">
+            <div class="hero-body">
+               <div class="container">
+                  <h1 class="title is-size-1">
+                     Last Step: Mail
+                  </h1>
+                  <h2 class="subtitle">
+                     Once our server processes your request we'll send you an email with the new excel file consisting in your InCard plus a last column completed by the Machine Learning algorithm.
+                  </h2>
+                  <div class="field">
+                     <div class="control has-icons-left has-icons-right">
+                        <input class="input" name="email" type="email" placeholder="Your e-mail address">
+                        <span class="icon is-small is-left">
+                        <i class="fas fa-envelope"></i>
+                        </span>
+                        <span class="icon is-small is-right">
+                        <!--<i class="fas fa-exclamation-triangle"></i>-->
+                        </span>
+                     </div>
+                  </div>
+                  <div class="field is-grouped">
+                     <div class="control">
+                        <input class="button is-link is-large" type=submit name=press value="Process">
+                     </div>
+                  </div>
+
+
+
+            </div>
+            </div>
+         </section>
+      </form>
+      <footer class="footer">
+         <div class="content has-text-centered">
+            <p>
+               Proof of concept powered by:
+               <a href="http://easytech.com.ar" target="_blank">EasytechGreen</a> and 
+               <a href="http://icas.unsam.edu.ar" target="_blank">ICAS Universidad de San Martin</a>
+            </p>
+         </div>
+      </footer>
+   </body>
+</html>
+
+
+
