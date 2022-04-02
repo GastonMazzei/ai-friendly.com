@@ -28,7 +28,7 @@ services:
       - flask
   jenkins:
     image: jenkins/jenkins:2.190.1
-    user: "1001:1001"
+    user: root
     ports:
         - "8080:8080"
         - "50000:50000"
