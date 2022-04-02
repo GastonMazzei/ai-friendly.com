@@ -170,28 +170,28 @@ class AImodel:
             ])
         elif self.customization_level==1:
             self.model = Sequential([
-                Dense(int((self.params['layer1_basic'] if self.params['layer1_basic']!='' else 16) if 'layer1_basic' in self.params else 8),
-                      activation=self.params['activation_basic'],
+                Dense(int((self.params['layer1_basic'] if self.params.get('layer1_basic','')!='' else 16) if 'layer1_basic' in self.params else 8),
+                      activation=self.params.get('activation_basic','relu'),
                       input_shape=(dimensions,)),
-                Dense(int((self.params['layer2_basic'] if self.params['layer2_basic']!='' else 16) if 'layer2_basic' in self.params else 8),
-                      activation=self.params['activation_basic']),
+                Dense(int((self.params['layer2_basic'] if self.params.get('layer2_basic','')!='' else 16) if 'layer2_basic' in self.params else 8),
+                      activation=self.params.get('activation_basic','relu')),
                 Dense(1, activation='sigmoid'),
             ])
         else:
             architecture = []
             if self.params.get('timeseries_advanced',None):
-                architecture += [Conv1D(8,2,padding='same',activation=self.params['activation_advanced']),
-                                 Conv1D(16,2,padding='same',activation=self.params['activation_advanced']),
+                architecture += [Conv1D(8,2,padding='same',activation=self.params.get('activation_advanced','relu')),
+                                 Conv1D(16,2,padding='same',activation=self.params.get('activation_advanced','relu')),
                                  MaxPool1D(pool_size=2,strides=1,padding='same'),
                                  Flatten(),]
 
             architecture += [
                 Dense(int((self.params['layer1_advanced'] if self.params['layer1_advanced']!='' else 16) if 'layer1_advanced' in self.params else 8),
-                      activation=self.params['activation_advanced']),
+                      activation=self.params.get('activation_advanced','relu')),
                 Dense(int((self.params['layer2_advanced'] if self.params['layer2_advanced']!='' else 16) if 'layer2_advanced' in self.params else 8),
-                      activation=self.params['activation_advanced']),
+                      activation=self.params.get('activation_advanced','relu')),
                 Dense(int((self.params['layer3_advanced'] if self.params['layer3_advanced']!='' else 16) if 'layer3_advanced' in self.params else 8),
-                      activation=self.params['activation_advanced']),
+                      activation=self.params.get('activation_advanced','relu')),
             ]
 
             architecture.append(Dense(1, activation='sigmoid'))
@@ -201,11 +201,10 @@ class AImodel:
         if self.customization_level!=2:
             optimizer = 'sgd'
         else:
-            print(float(self.params['learning_rate_advanced'])/100)
-            if self.params['optimizer_advanced']=='sgd':
-                optimizer = SGD(lr=float(self.params['learning_rate_advanced'])/100)
-            elif self.params['optimizer_advanced']=='adam':
-                optimizer = Adam(lr=float(self.params['learning_rate_advanced'])/100)
+            if self.params.get('optimizer_advanced','sgd')=='sgd':
+                optimizer = SGD(lr=float(self.params.get('learning_rate_advanced',10))/1000)
+            elif self.params.get('optimizer_advanced','sgd')=='adam':
+                optimizer = Adam(lr=float(self.params.get('learning_rate_advanced',1))/1000)
 
         self.model.compile(optimizer=optimizer,
                       loss='binary_crossentropy',
@@ -227,9 +226,9 @@ class AImodel:
         if self.customization_level==0:
             batch_size, epochs = 32,100 
         elif self.customization_level==1:
-            batch_size, epochs = 32, int(self.params['epochs_basic']) 
+            batch_size, epochs = 32, int(self.params.get('epochs_basic',100)) 
         else:
-            batch_size, epochs = int(self.params['batch_advanced']), int(self.params['epochs_advanced'])
+            batch_size, epochs = int(self.params.get('batch_advanced',32)), int(self.params.get('epochs_advanced',50))
  
         self.history = self.model.fit(self.X_train, self.Y_train,
                   batch_size=batch_size, epochs=epochs, verbose=0,
@@ -348,6 +347,7 @@ def loadModelAndProcess(_dir, ICFILE):
     
 def plotPerformance(X_test, Y_test, model):
     y_true = Y_test
+    print(f'X_test shape is {X_test.shape} and Y_test.shape is {Y_test.shape}')
     Ytoshuffle=np.zeros(len(Y_test))
     for i in range(len(Y_test)):
         Ytoshuffle[i]=Y_test[i]
@@ -356,9 +356,17 @@ def plotPerformance(X_test, Y_test, model):
     _y_true = list(y_true) + [0,1] # Protect against only-one-class-errors
     _y_scoresrandom = list(y_scoresrandom) + [1,0] # Protect against only-one-class-errors
     print('AUC Random tagger %8.3f \n' % metrics.roc_auc_score(_y_true, _y_scoresrandom))
-    fprr, tprr, thresholdsr = metrics.roc_curve(_y_true, _y_scoresrandom)
+    try:
+        print(f'About to call the metrics roc curve with first and second arguments  of length {len(_y_true)} {len(_y_scoresrandom)}')
+        fprr, tprr, thresholdsr = metrics.roc_curve(_y_true, _y_scoresrandom)
+    except Exception as ins:
+        print(f'[E]: ')
+        print(ins.args)
+        raise Exception(ins)
+    print('success')
     plt.plot(fprr,tprr, label = 'random')
     y_scores = model.predict_proba(X_test)
+    print('moved on...')
     _y_scores = list(y_scores) + [1,0] # Protect against only-one-class-errors
     fpr, tpr, thresholds = metrics.roc_curve(_y_true, _y_scores)
     plt.plot(fpr,tpr, label = 'NN AUC '+ str(round(metrics.roc_auc_score(_y_true, _y_scores),2)))
@@ -367,7 +375,7 @@ def plotPerformance(X_test, Y_test, model):
     plt.yscale('linear')
     plt.legend(loc = 'lower right')
     plt.title('Neural Network performance')
-
+    
     return
 
 def plotLoss(history):
