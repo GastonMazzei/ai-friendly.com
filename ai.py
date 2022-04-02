@@ -353,18 +353,21 @@ def plotPerformance(X_test, Y_test, model):
         Ytoshuffle[i]=Y_test[i]
     np.random.shuffle(Ytoshuffle)
     y_scoresrandom = Ytoshuffle
-    print('AUC Random tagger %8.3f \n' % metrics.roc_auc_score(y_true, y_scoresrandom))
-    fprr, tprr, thresholdsr = metrics.roc_curve(y_true, y_scoresrandom)
+    _y_true = list(y_true) + [0,1] # Protect against only-one-class-errors
+    _y_scoresrandom = list(y_scoresrandom) + [0,1] # Protect against only-one-class-errors
+    print('AUC Random tagger %8.3f \n' % metrics.roc_auc_score(_y_true, _y_scoresrandom))
+    fprr, tprr, thresholdsr = metrics.roc_curve(_y_true, _y_scoresrandom)
     plt.plot(fprr,tprr, label = 'random')
     y_scores = model.predict_proba(X_test)
-    fpr, tpr, thresholds = metrics.roc_curve(y_true, y_scores)
-    plt.plot(fpr,tpr, label = 'NN AUC '+ str(round(metrics.roc_auc_score(y_true, y_scores),2)))
+    _y_scores = list(y_scores) + [0,1] # Protect against only-one-class-errors
+    fpr, tpr, thresholds = metrics.roc_curve(_y_true, _y_scores)
+    plt.plot(fpr,tpr, label = 'NN AUC '+ str(round(metrics.roc_auc_score(_y_true, _y_scores),2)))
     plt.xlabel('False Positive rate')
     plt.ylabel('True Positive rate')
     plt.yscale('linear')
     plt.legend(loc = 'lower right')
     plt.title('Neural Network performance')
-    
+
     return
 
 def plotLoss(history):
