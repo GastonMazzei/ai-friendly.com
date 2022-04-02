@@ -354,12 +354,12 @@ def plotPerformance(X_test, Y_test, model):
     np.random.shuffle(Ytoshuffle)
     y_scoresrandom = Ytoshuffle
     _y_true = list(y_true) + [0,1] # Protect against only-one-class-errors
-    _y_scoresrandom = list(y_scoresrandom) + [0,1] # Protect against only-one-class-errors
+    _y_scoresrandom = list(y_scoresrandom) + [1,0] # Protect against only-one-class-errors
     print('AUC Random tagger %8.3f \n' % metrics.roc_auc_score(_y_true, _y_scoresrandom))
     fprr, tprr, thresholdsr = metrics.roc_curve(_y_true, _y_scoresrandom)
     plt.plot(fprr,tprr, label = 'random')
     y_scores = model.predict_proba(X_test)
-    _y_scores = list(y_scores) + [0,1] # Protect against only-one-class-errors
+    _y_scores = list(y_scores) + [1,0] # Protect against only-one-class-errors
     fpr, tpr, thresholds = metrics.roc_curve(_y_true, _y_scores)
     plt.plot(fpr,tpr, label = 'NN AUC '+ str(round(metrics.roc_auc_score(_y_true, _y_scores),2)))
     plt.xlabel('False Positive rate')
